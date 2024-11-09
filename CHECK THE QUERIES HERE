@@ -1,0 +1,116 @@
+ ##how to create a new database
+create database library;
+
+USE library;
+
+-- 1. Branch table
+CREATE TABLE Branch (
+    Branch_no INT PRIMARY KEY,
+    Manager_Id INT,
+    Branch_address VARCHAR(100),
+    Contact_no VARCHAR(15)
+);
+
+-- 2. Employee table
+CREATE TABLE Employee (
+    Emp_Id INT PRIMARY KEY,
+    Emp_name VARCHAR(50),
+    Position VARCHAR(50),
+    Salary DECIMAL(10, 2),
+    Branch_no INT,
+    FOREIGN KEY (Branch_no) REFERENCES Branch(Branch_no)
+);
+
+-- 3. Books table
+CREATE TABLE Books (
+    ISBN INT PRIMARY KEY,
+    Book_title VARCHAR(100),
+    Category VARCHAR(50),
+    Rental_Price DECIMAL(8, 2),
+    Status ENUM('yes', 'no'),  -- 'yes' if available, 'no' if not
+    Author VARCHAR(50),
+    Publisher VARCHAR(50)
+);
+
+-- 4. Customer table
+CREATE TABLE Customer (
+    Customer_Id INT PRIMARY KEY,
+    Customer_name VARCHAR(50),
+    Customer_address VARCHAR(100),
+    Reg_date DATE
+);
+
+-- 5. IssueStatus table
+CREATE TABLE IssueStatus (
+    Issue_Id INT PRIMARY KEY,
+    Issued_cust INT,
+    Issued_book_name VARCHAR(100),
+    Issue_date DATE,
+    Isbn_book INT,
+    FOREIGN KEY (Issued_cust) REFERENCES Customer(Customer_Id),
+    FOREIGN KEY (Isbn_book) REFERENCES Books(ISBN)
+);
+
+-- 6. ReturnStatus table
+CREATE TABLE ReturnStatus (
+    Return_Id INT PRIMARY KEY,
+    Return_cust INT,
+    Return_book_name VARCHAR(100),
+    Return_date DATE,
+    Isbn_book2 INT,
+    FOREIGN KEY (Return_cust) REFERENCES Customer(Customer_Id),
+    FOREIGN KEY (Isbn_book2) REFERENCES Books(ISBN)
+);
+select * from books;
+select * from branch;
+select * from customer;
+select * from employee;
+select * from issuestatus;
+select * from returntatus;
+
+SELECT Book_title, Category, Rental_Price
+FROM Books
+WHERE Status = 'yes';
+ SELECT Emp_name, Salary
+FROM Employee
+ORDER BY Salary DESC;
+SELECT Books.Book_title, Customer.Customer_name
+FROM IssueStatus
+JOIN Books ON IssueStatus.Isbn_book = Books.ISBN
+JOIN Customer ON IssueStatus.Issued_cust = Customer.Customer_Id;
+
+SELECT Category, COUNT(*) AS Total_Books
+FROM Books
+GROUP BY Category;
+SELECT Emp_name, Position
+FROM Employee
+WHERE Salary > 50000;
+SELECT Customer.Customer_name
+FROM Customer
+LEFT JOIN IssueStatus ON Customer.Customer_Id = IssueStatus.Issued_cust
+WHERE Customer.Reg_date < '2022-01-01' AND IssueStatus.Issue_Id IS NULL;
+SELECT Branch_no, COUNT(*) AS Employee_Count
+FROM Employee
+GROUP BY Branch_no;
+SELECT Customer.Customer_name
+FROM IssueStatus
+JOIN Customer ON IssueStatus.Issued_cust = Customer.Customer_Id
+WHERE Issue_date BETWEEN '2023-06-01' AND '2023-06-30';
+SELECT Book_title
+FROM Books
+WHERE Book_title LIKE '%History%';
+SELECT Branch_no, COUNT(*) AS Employee_Count
+FROM Employee
+GROUP BY Branch_no
+HAVING COUNT(*) > 5;
+-- none
+SELECT Employee.Emp_name, Branch.Branch_address
+FROM Employee
+JOIN Branch ON Employee.Emp_Id = Branch.Manager_Id;
+
+SELECT Customer.Customer_name
+FROM IssueStatus
+JOIN Books ON IssueStatus.Isbn_book = Books.ISBN
+JOIN Customer ON IssueStatus.Issued_cust = Customer.Customer_Id
+WHERE Books.Rental_Price > 25;
+
